@@ -1,1 +1,2 @@
-<video src="HM.mp4" controls width="600"></video>
+## Demo Video
+[Watch HM.mp4](HM.mp4)
