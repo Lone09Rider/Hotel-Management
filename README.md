@@ -1,2 +1,2 @@
-## Demo Video
-[![Watch the demo](Screenshot.png)](HM.mp4)
+## Demo
+![Hotel Management Demo](HM.gif)
