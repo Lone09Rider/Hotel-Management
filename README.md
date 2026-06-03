@@ -1,2 +1,2 @@
 ## Demo Video
-[Watch HM.mp4](HM.mp4)
+[![Watch the demo](Screenshot.png)](HM.mp4)
