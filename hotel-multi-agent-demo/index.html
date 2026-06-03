@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEO-HELIOS | Multi-Agent Cyber-Concierge OS</title>
+    <!-- Google Fonts: Orbitron for Sci-Fi HUD and Outfit for clean interface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons for clean premium graphics -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Premium Interactive HUD Scanning Background -->
+    <div class="hud-grid-overlay"></div>
+    <div class="hud-scanline"></div>
+
+    <!-- Main System Frame -->
+    <div class="system-container">
+        
+        <!-- Header: System Telemetry and Connection Core -->
+        <header class="system-header">
+            <div class="header-logo">
+                <div class="logo-portal-ring"></div>
+                <div class="logo-text">
+                    <h1>NEO-HELIOS</h1>
+                    <span class="sub-logo">CYBER-CONCIERGE OS v4.8.2</span>
+                </div>
+            </div>
+            
+            <!-- Real-time HUD Telemetry -->
+            <div class="header-telemetry">
+                <div class="telemetry-item">
+                    <span class="label">SYS.LOC:</span>
+                    <span class="value cyan-glow" id="hud-location">ROOM_DECK_4</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">CORES:</span>
+                    <span class="value magenta-glow" id="hud-cores">4_ACTIVE</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">SYS.TIME:</span>
+                    <span class="value" id="hud-time">00:00:00</span>
+                </div>
+            </div>
+
+            <!-- Ollama Connection Controller -->
+            <div class="connection-controller">
+                <div class="mode-selector">
+                    <button id="btn-mode-sim" class="mode-btn active" onclick="setMode('sim')">
+                        <i class="fa-solid fa-microchip"></i> SIM CORE
+                    </button>
+                    <button id="btn-mode-ollama" class="mode-btn" onclick="setMode('ollama')">
+                        <i class="fa-solid fa-network-wired"></i> OLLAMA CORE
+                    </button>
+                </div>
+                
+                <div class="ollama-config-panel hidden" id="ollama-config">
+                    <div class="input-group">
+                        <i class="fa-solid fa-server"></i>
+                        <input type="text" id="ollama-url" value="http://localhost:11434" placeholder="Ollama URL">
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-brain"></i>
+                        <input type="text" id="ollama-model" value="llama3" placeholder="Model Name">
+                    </div>
+                    <button class="btn-ping" onclick="pingOllama()" title="Check connection">
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+
+                <div class="system-status">
+                    <span class="status-dot online" id="status-dot"></span>
+                    <span class="status-text text-online" id="status-text">SIMULATION READY</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace Deck -->
+        <main class="workspace-deck">
+            
+            <!-- Left Wing: Guest Registry & Telemetry Deck -->
+            <section class="workspace-wing left-wing">
+                <div class="hud-panel-header">
+                    <h2><i class="fa-solid fa-id-card-clip text-cyan"></i> GUEST REGISTER</h2>
+                    <span class="panel-tag">[REG_DECK_L]</span>
+                </div>
+                
+                <!-- Guest Check-In Terminal -->
+                <div class="panel-content">
+                    <div class="registry-card" id="checkin-panel">
+                        <p class="panel-desc">Aria welcomes new guests to register, record luggage volumes, and configure quantum parameters.</p>
+                        
+                        <div class="form-group">
+                            <label for="guest-name">GUEST IDENTIFIER (NAME)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-user-astronaut"></i>
+                                <input type="text" id="guest-name" placeholder="Enter guest full name..." value="Tony Stark">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label for="room-num">ROOM DECK</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-door-open"></i>
+                                    <input type="number" id="room-num" placeholder="Room" value="302" min="101" max="999">
+                                </div>
+                            </div>
+                            <div class="form-group col-6">
+                                <label>LUGGAGE CORE</label>
+                                <div class="luggage-counter">
+                                    <button class="cnt-btn" onclick="updateLuggageCount(-1)"><i class="fa-solid fa-minus"></i></button>
+                                    <span id="luggage-count-display">3</span>
+                                    <button class="cnt-btn" onclick="updateLuggageCount(1)"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-action pulse-cyan-btn" id="btn-checkin" onclick="performCheckIn()">
+                            <span class="glow-effect"></span>
+                            <i class="fa-solid fa-right-to-bracket"></i> INDUCT GUEST
+                        </button>
+                    </div>
+
+                    <!-- Checked In Guest Telemetry Portal -->
+                    <div class="registry-card hidden" id="guest-details-panel">
+                        <div class="avatar-portal-mini">
+                            <div class="portal-ring-pulse"></div>
+                            <i class="fa-solid fa-user-shield portal-avatar-icon"></i>
+                        </div>
+                        <h3 id="active-guest-name" class="text-cyan">TONY STARK</h3>
+                        <div class="guest-stats-hud">
+                            <div class="stat-line">
+                                <span class="lbl"><i class="fa-solid fa-door-closed text-magenta"></i> ASSIGNED ROOM:</span>
+                                <span class="val" id="active-room-display">DECK 302</span>
+                            </div>
+                            <div class="stat-line">
+                                <span class="lbl"><i class="fa-solid fa-suitcase-rolling text-cyan"></i> LUGGAGE CHESTS:</span>
+                                <span class="val" id="active-luggage-display">3 UNITS</span>
+                            </div>
+                            <div class="stat-line">
+                                <span class="lbl"><i class="fa-solid fa-wave-square text-purple"></i> ROOM TEMP:</span>
+                                <span class="val">21.5°C <span class="sub-val">(OPTIMAL)</span></span>
+                            </div>
+                            <div class="stat-line">
+                                <span class="lbl"><i class="fa-solid fa-shield-halved text-cyan"></i> SHELL INTEGRITY:</span>
+                                <span class="val text-online">100%</span>
+                            </div>
+                        </div>
+
+                        <!-- Room Ambience Simulation Dials -->
+                        <div class="room-dials-grid">
+                            <button class="dial-btn active" id="dial-lights" onclick="toggleAmbience('lights')">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                <span>LIGHTS ON</span>
+                            </button>
+                            <button class="dial-btn" id="dial-shield" onclick="toggleAmbience('shield')">
+                                <i class="fa-solid fa-shield"></i>
+                                <span>DEFENSE OFF</span>
+                            </button>
+                        </div>
+
+                        <button class="btn-action btn-danger pulse-magenta-btn" onclick="performCheckOut()">
+                            <span class="glow-effect"></span>
+                            <i class="fa-solid fa-right-from-bracket"></i> DISCHARGE GUEST
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Agent System Monitors -->
+                <div class="agent-monitors-hud">
+                    <div class="hud-panel-header">
+                        <h2><i class="fa-solid fa-sliders"></i> AGENT BIO-METRICS</h2>
+                    </div>
+                    <div class="biometric-list">
+                        <div class="bio-item active" id="bio-aria">
+                            <span class="bio-name">ARIA.AI (WELCOMER)</span>
+                            <div class="bio-bar-wrapper">
+                                <div class="bio-bar bg-cyan" style="width: 92%"></div>
+                            </div>
+                            <span class="bio-status text-cyan font-mono">STANDBY</span>
+                        </div>
+                        <div class="bio-item" id="bio-dexter">
+                            <span class="bio-name">DEXTER.AI (ROOM SERV)</span>
+                            <div class="bio-bar-wrapper">
+                                <div class="bio-bar bg-magenta" style="width: 85%"></div>
+                            </div>
+                            <span class="bio-status text-magenta font-mono">READY</span>
+                        </div>
+                        <div class="bio-item" id="bio-celeste">
+                            <span class="bio-name">CELESTE.AI (LOCAL GUIDE)</span>
+                            <div class="bio-bar-wrapper">
+                                <div class="bio-bar bg-purple" style="width: 78%"></div>
+                            </div>
+                            <span class="bio-status text-purple font-mono">SYNCING</span>
+                        </div>
+                        <div class="bio-item" id="bio-valedictor">
+                            <span class="bio-name">VALEDICTOR.AI (GOODBYE)</span>
+                            <div class="bio-bar-wrapper">
+                                <div class="bio-bar bg-amber" style="width: 95%"></div>
+                            </div>
+                            <span class="bio-status text-amber font-mono">ONLINE</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Wing: Futuristic Interactive Chat Terminal with ARC-style Portal -->
+            <section class="workspace-wing center-wing">
+                
+                <!-- JARVIS CENTRAL PORTAL -->
+                <div class="central-hologram-portal">
+                    <div class="portal-outer-ring-dashed"></div>
+                    <div class="portal-inner-ring-solid"></div>
+                    <div class="portal-glow-aurora"></div>
+                    <div class="portal-scanning-beam"></div>
+                    <div class="portal-core-matrix">
+                        <i class="fa-solid fa-atom quantum-spin-icon"></i>
+                    </div>
+                    <!-- Ambient Portal Telemetry -->
+                    <div class="portal-text-emitter font-mono" id="portal-emitter-text">
+                        SYSTEMS STABLE: ONLINE
+                    </div>
+                </div>
+
+                <!-- Chat Header / Agent Select Grid -->
+                <div class="agent-selector-container">
+                    <div class="selector-tag">SELECT CONCIERGE CHANNELS:</div>
+                    <div class="agent-grid">
+                        <button class="agent-tab active" data-agent="omni" onclick="switchAgent('omni')">
+                            <div class="agent-tab-glow omni-glow"></div>
+                            <i class="fa-solid fa-network-wired"></i>
+                            <div class="tab-info">
+                                <span class="tab-title">OMNI-CORE</span>
+                                <span class="tab-desc">Auto-routing Engine</span>
+                            </div>
+                        </button>
+                        <button class="agent-tab" data-agent="aria" onclick="switchAgent('aria')">
+                            <div class="agent-tab-glow aria-glow"></div>
+                            <i class="fa-solid fa-handshake-angle text-cyan"></i>
+                            <div class="tab-info">
+                                <span class="tab-title">ARIA</span>
+                                <span class="tab-desc">Welcome Liaison</span>
+                            </div>
+                        </button>
+                        <button class="agent-tab" data-agent="dexter" onclick="switchAgent('dexter')">
+                            <div class="agent-tab-glow dexter-glow"></div>
+                            <i class="fa-solid fa-bell-concierge text-magenta"></i>
+                            <div class="tab-info">
+                                <span class="tab-title">DEXTER</span>
+                                <span class="tab-desc">Service Ops</span>
+                            </div>
+                        </button>
+                        <button class="agent-tab" data-agent="celeste" onclick="switchAgent('celeste')">
+                            <div class="agent-tab-glow celeste-glow"></div>
+                            <i class="fa-solid fa-compass text-purple"></i>
+                            <div class="tab-info">
+                                <span class="tab-title">CELESTE</span>
+                                <span class="tab-desc">Voyage Advisor</span>
+                            </div>
+                        </button>
+                        <button class="agent-tab" data-agent="valedictor" onclick="switchAgent('valedictor')">
+                            <div class="agent-tab-glow valedictor-glow"></div>
+                            <i class="fa-solid fa-door-open text-amber"></i>
+                            <div class="tab-info">
+                                <span class="tab-title">VALEDICTOR</span>
+                                <span class="tab-desc">Farewell Core</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Active Conversation Channel -->
+                <div class="terminal-chat-deck">
+                    <div class="chat-viewport" id="chat-viewport">
+                        <!-- Initialization System Message -->
+                        <div class="system-log font-mono">
+                            <span class="time">[00:00:01]</span>
+                            <span class="sig">[SYS_BOOT]</span>
+                            <span class="msg">NEO-HELIOS kernel initialized. Waiting for Guest Induction.</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input and Signal Visualizer -->
+                    <div class="chat-input-deck">
+                        <div class="voice-wave-visualizer" id="voice-waves">
+                            <div class="wave-bar bg-cyan"></div>
+                            <div class="wave-bar bg-magenta"></div>
+                            <div class="wave-bar bg-purple"></div>
+                            <div class="wave-bar bg-cyan"></div>
+                            <div class="wave-bar bg-magenta"></div>
+                            <div class="wave-bar bg-purple"></div>
+                            <div class="wave-bar bg-cyan"></div>
+                        </div>
+                        <div class="input-container">
+                            <input type="text" id="chat-input" placeholder="Initiate verbal transmission (e.g. 'Hey, please send a sweeper' or 'Suggest sites to visit')..." onkeydown="if(event.key === 'Enter') transmitMessage()">
+                            <button class="btn-transmit pulse-cyan-btn" onclick="transmitMessage()">
+                                <i class="fa-solid fa-paper-plane"></i> TRANSMIT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Wing: Holographic Billing Ledger & Analytics Dashboard (Super Animated HUD) -->
+            <section class="workspace-wing right-wing">
+                
+                <div class="hud-panel-header">
+                    <h2><i class="fa-solid fa-chart-pie text-magenta"></i> LEDGER ANALYTICS</h2>
+                    <span class="panel-tag">[EXP_HUD_R]</span>
+                </div>
+
+                <div class="panel-content ledger-main-content">
+                    
+                    <!-- Futuristic Rolling Cost Tally Circle -->
+                    <div class="hologram-billing-hud">
+                        <div class="hud-ring-outer"></div>
+                        <div class="hud-ring-middle"></div>
+                        <div class="hud-ring-inner"></div>
+                        <div class="hud-data-core">
+                            <span class="hud-tally-label font-mono">CUMULATIVE DUES</span>
+                            <span class="hud-tally-value text-cyan" id="billing-grand-total">$0</span>
+                            <span class="hud-tally-room font-mono" id="billing-room-tag">ROOM_EMPTY</span>
+                        </div>
+                    </div>
+
+                    <!-- Category Allocation Telemetry Dials -->
+                    <div class="ledger-metrics">
+                        <div class="metric-dial">
+                            <div class="circle-progress-wrapper" data-percent="0">
+                                <svg viewBox="0 0 36 36" class="circular-chart cyan-chart">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" id="chart-lodging" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <span class="chart-percent font-mono text-cyan" id="tally-lodging-pct">0%</span>
+                            </div>
+                            <span class="metric-lbl">LODGING</span>
+                        </div>
+                        <div class="metric-dial">
+                            <div class="circle-progress-wrapper" data-percent="0">
+                                <svg viewBox="0 0 36 36" class="circular-chart magenta-chart">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" id="chart-services" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <span class="chart-percent font-mono text-magenta" id="tally-services-pct">0%</span>
+                            </div>
+                            <span class="metric-lbl">SERVICES</span>
+                        </div>
+                        <div class="metric-dial">
+                            <div class="circle-progress-wrapper" data-percent="0">
+                                <svg viewBox="0 0 36 36" class="circular-chart purple-chart">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" id="chart-tours" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <span class="chart-percent font-mono text-purple" id="tally-tours-pct">0%</span>
+                            </div>
+                            <span class="metric-lbl">EXCURSIONS</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Real-time Hologram Ledger Sheets -->
+                    <div class="hologram-invoice-panel">
+                        <div class="ledger-header font-mono">
+                            <span>ITEMIZED TRANSACTION LEDGER</span>
+                            <span>QTY</span>
+                            <span>CREDIT</span>
+                        </div>
+                        <div class="ledger-rows" id="ledger-rows">
+                            <!-- Populated in real time via code -->
+                            <div class="empty-ledger-notice" id="empty-ledger-text">
+                                <i class="fa-solid fa-receipt ledger-hologram-icon"></i>
+                                <p class="font-mono">NO ACTIVE TRANSACTIONS FOUND</p>
+                                <p class="sub font-mono">Induct a guest to generate billing ledger.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+
+        <!-- Footer Info System -->
+        <footer class="system-footer font-mono">
+            <span class="telemetry-log">SYS.LOG: APPS ACTIVE // NET SECURE // MATRIX ON</span>
+            <span class="creator-stamp">DESIGN BY TEAM ANTIGRAVITY &bull; GOOGLE DEEPMIND</span>
+        </footer>
+    </div>
+
+    <!-- Script imports -->
+    <script src="app.js"></script>
+</body>
+</html>
